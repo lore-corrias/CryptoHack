@@ -1,6 +1,19 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "name": "cryptohack",
+  "image": "mcr.microsoft.com/devcontainers/python",
+  "service": "cryptohack",
   "features": {
     "ghcr.io/devcontainers/features/nix:1": {}
-  }
+  },
+  "remoteEnv": {
+    "WAYLAND_DISPLAY": "wayland-1",
+    "XDG_RUNTIME_DIR": "/tmp"
+  },
+  "mounts": [
+    "source=/run/user/1000/wayland-1,target=/tmp/wayland-1,type=bind,z,rw"
+  ],
+  "runArgs": [
+    "--security-opt",
+    "label=disable"
+  ]
 }
