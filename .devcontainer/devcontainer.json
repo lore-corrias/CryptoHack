@@ -1,6 +1,18 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "image": "mcr.microsoft.com/devcontainers/python",
   "features": {
-    "ghcr.io/devcontainers/features/nix:1": {}
-  }
+    "ghcr.io/devcontainers/features/nix:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": false,
+      "installOhMyZshConfig": false,
+      "username": "devcontainer",
+      "userUid": "1001",
+      "userGid": "1001",
+      "configureZshAsDefaultShell": true,
+      "upgradePackages": "true"
+    }
+  },
+  "remoteUser": "devcontainer",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,relabel=shared,U=true"
 }
