@@ -16,8 +16,7 @@ there is one solution $x \equiv a \mod N$, where N = $n^1 \cdot n^2 \cdot\ ...\ 
 $$
 \displaylines{x \equiv 2 \mod 5 \\x \equiv 3 \mod 1 \\x \equiv 5 \mod 17 \\}
 $$
-there is an integer $a$ such that $x \equiv a \mod 935$.
-## Challenges
+there is an integer $a$ such that $x \equiv a \mod 935$. ## Challenges
 ### adriens-signs
 A custom encryption algorithm that uses modular arithmetic. The encryption is:
 1. the message is encoded in binary
@@ -44,8 +43,49 @@ Arrange the following equations to get $p, q$:
 $$
 \displaylines{
 N = p \cdot q \\
-c_1 = (2 \cdot p + 3 \cdot q)^{e_1} \mod N \\
-c_2 = (5 \cdot p + 7 \cdot q)^{e_2} \mod N \\
+c_1 \equiv (2 \cdot p + 3 \cdot q)^{e_1} \mod N \\
+c_2 \equiv (5 \cdot p + 7 \cdot q)^{e_2} \mod N \\
 }
 $$
 
+In order to solve this problem, start by elevating $c_1$ to $e_2$ and $c_2$ to $e_1$:
+$$
+{c_1}^{e_2} \equiv (a_1 \cdot p + b_1 \cdot q)^{e_1 \cdot e_2} \mod N
+$$
+By calculating the power of the binomial following the [Binomial Theorem](https://en.wikipedia.org/wiki/Binomial_theorem) we would get a polynomial like the following:
+$$
+(a_1 \cdot p)^{e_1e_2} +\ ...\ + (b_1 \cdot q)^{e_1e_2} \mod N 
+$$
+but we notice that the terms in the middle are all in the form $c\cdot p^i\cdot q^j$, where $c$ is any combination of $a$ and $b$, and $i$ and $j$ are $0 < i < e_1, 0 < j < e_2$. Since this terms all contain a product of some power of $p$ and $q$, calculating the modulo just cancels them out. So we have:
+$$
+c_1^{e_2} \equiv (a_1 \cdot p)^{e_1e_2} + (b_1 \cdot q)^{e_1e_2} \mod N
+$$
+Since we have $N = p \cdot q$, we can apply the [[crt]] in reverse (instead of going from a sistem of equations modulo $p, q$ to one equation modulo $N = p \cdot q$, we go the opposite way and split the equations) to get the following equations:
+$$
+\begin{cases}
+c_1^{e_2} \equiv (a_1 \cdot p)^{e_1e_2} + (b_1 \cdot q)^{e_1e_2} \mod p \\
+c_1^{e_2} \equiv (a_1 \cdot p)^{e_1e_2} + (b_1 \cdot q)^{e_1e_2} \mod q
+\end{cases}
+$$
+the same can be done with $c_2^{e_1}$:
+$$
+\begin{cases}
+c_2^{e_1} \equiv (a_2 \cdot p)^{e_1e_2} + (b_2 \cdot q)^{e_1e_2} \mod p \\
+c_2^{e_1} \equiv (a_2 \cdot p)^{e_1e_2} + (b_2 \cdot q)^{e_1e_2} \mod q
+\end{cases}
+$$
+In these cases, for the equations $\mod p$, the terms containing $p$ cancel out, and the same can be said for those $\mod q$. Applying this logic, we get these two equations:
+$$
+\begin{cases}
+q_1 \equiv c_1^{e_2} \equiv (2p)^{e_1e_2} \mod q \\
+q_2 \equiv c_2^{e_1} \equiv (5p)^{e_1e_2} \mod q
+\end{cases}
+$$
+In order to factor $q$, we need a term $D$ that we know is divisible by both $q$ and $N$, so we can calculate $gcd(D,N)=q$. Such a term can be built as:
+$$
+D = 5^{e_1e_2}q_1 - 2^{e_1e_2}q_2
+$$
+We know that $D$ is divisible by $q$ because both $q_1$ and $q_2$ are. So we get:
+$$
+\displaylines{q = gcd(D,N) \\ p = \frac{N}{q}}
+$$

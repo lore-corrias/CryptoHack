@@ -14,9 +14,8 @@
   "mounts": [
     "source=/run/user/1000/wayland-1,target=/tmp/wayland-1,type=bind,z,rw"
   ],
-  "runArgs": [
-    "--security-opt",
+  "securityOpt": [
     "label=disable"
   ],
-  "postCreateCommand": "conda config --add channels conda-forge && conda config --set channel_priority strict && conda create --yes -n sage sage python=3.12"
+  "onCreateCommand": "sudo chsh --shell /bin/zsh vscode && conda config --add channels conda-forge && conda config --set channel_priority strict && conda create --yes -n sage sage python=3.12"
 }
