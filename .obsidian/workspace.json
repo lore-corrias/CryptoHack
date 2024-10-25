@@ -1,70 +1,39 @@
 {
   "main": {
-    "id": "8bb07ae25b62384c",
+    "id": "eb609552f118ffa5",
     "type": "split",
     "children": [
       {
-        "id": "3c240a3c5bb8e239",
+        "id": "67e24ae4b80eae8f",
         "type": "tabs",
         "children": [
           {
-            "id": "bd95e88ac79d0b0b",
+            "id": "6e8916d8948bbb56",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "release-notes",
               "state": {
-                "file": "mod_arithmetic/crt.md",
-                "mode": "source",
-                "source": false
+                "currentVersion": "1.7.4"
               },
               "icon": "lucide-file",
-              "title": "crt"
-            }
-          },
-          {
-            "id": "bfbcab5ccfc38571",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "mod_arithmetic/challenges.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "challenges"
-            }
-          },
-          {
-            "id": "bc28c92fea062ac3",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "block_cypher/AES.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "AES"
+              "title": "Release Notes 1.7.4"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
   },
   "left": {
-    "id": "6250db31b1801f7f",
+    "id": "ffb5299d690e59f0",
     "type": "split",
     "children": [
       {
-        "id": "611c1b1a4473437a",
+        "id": "606818493fca14a4",
         "type": "tabs",
         "children": [
           {
-            "id": "345e5c8f9be40dfd",
+            "id": "1b12f06cbc65014f",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -76,7 +45,7 @@
             }
           },
           {
-            "id": "e91e6e3a5224f849",
+            "id": "0e1a3eb2bea2b17d",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -93,7 +62,7 @@
             }
           },
           {
-            "id": "3745467f09f5aeb3",
+            "id": "661804066a37aede",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -106,24 +75,22 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
-    "id": "3274cb9ecdb7c61d",
+    "id": "67a056eda36d071a",
     "type": "split",
     "children": [
       {
-        "id": "7fa529b211031b85",
+        "id": "56828768c5ea6d79",
         "type": "tabs",
         "children": [
           {
-            "id": "f1022d4cac44381e",
+            "id": "29424677aa2a5ad7",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "mod_arithmetic/crt.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -133,25 +100,24 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for crt"
+              "title": "Backlinks"
             }
           },
           {
-            "id": "f1d5c50c7e8a0c89",
+            "id": "4fba6b52bba20177",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "mod_arithmetic/crt.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from crt"
+              "title": "Outgoing links"
             }
           },
           {
-            "id": "ff74735a52641335",
+            "id": "2171f35d6dbd3e2a",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -164,15 +130,13 @@
             }
           },
           {
-            "id": "7d274fa8116d83ba",
+            "id": "c2981ff2c6bee6a7",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "mod_arithmetic/crt.md"
-              },
+              "state": {},
               "icon": "lucide-list",
-              "title": "Outline of crt"
+              "title": "Outline"
             }
           }
         ]
@@ -192,14 +156,6 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "bc28c92fea062ac3",
-  "lastOpenFiles": [
-    "mod_arithmetic/challenges.md",
-    "block_cypher/AES.md",
-    "block_cypher",
-    "mod_arithmetic/crt.md",
-    "mod_arithmetic/legendre-symbol.md",
-    "mod_arithmetic",
-    "Welcome.md"
-  ]
+  "active": "6e8916d8948bbb56",
+  "lastOpenFiles": []
 }
