@@ -1,6 +1,11 @@
 ---
 title: AES and Block Cyphers
 ---
+- [[#Structure of AES|Structure of AES]]
+	- [[#Structure of AES#`SubBytes`|`SubBytes`]]
+	- [[#Structure of AES#`ShiftRows`|`ShiftRows`]]
+	- [[#Structure of AES#`MixColumns`|`MixColumns`]]
+
 Every block cipher performs so called "keyed permutations", meaning the the operations of text encryption map uniquely an *input block* to a single *output block*. This property is called *bijection* and it is fundamental to perform the process of decryption without errors.
 
 > [!important] The term "block" just refers to a segment of the text or, more generally, any stream of a fixed number of bytes.
@@ -52,3 +57,113 @@ The goal of this simple operation is not to achieve real diffusion, but rather t
 ![](https://cryptohack.org/static/img/aes/MixColumns.png)
 
 As a last step, the operation `AddRoundKey` is repeated once again.
+
+## Multiple Blocks
+Up until now, we saw AES encryption with one single block of text. However, in normal circumstances it is necessary to encrypt chunks of data that occupy multiple blocks, and this is where **modes of operation** become necessary. These are a set of instructions on how to use the AES cipher for longer messages, and all of them introduce *serious weaknesses* when used incorrectly.
+
+### Keys and Passwords
+All keys of an AES cipher should be made of random bytes generated with a *Cryptographically-Secure pseudorandom number generator* (referred to as *CSPRNG*), because passwords and other kinds of predictable tokens are generally easy to break.
+
+### ECB
+ECB is the simplest mode of operation: each block is encrypted independently and appended to the output separately. This mode of operation is particularly vulnerable to "*oracles*". Consider this [ecb-oracle](https://aes.cryptohack.org/ecb_oracle/) challenge from CryptoHack:
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/ecb_oracle/encrypt/<plaintext>/')
+def encrypt(plaintext):
+    plaintext = bytes.fromhex(plaintext)
+
+    padded = pad(plaintext + FLAG.encode(), 16)
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        encrypted = cipher.encrypt(padded)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"ciphertext": encrypted.hex()}
+```
+We are given the possibility to encrypt an arbitrary text which will be appended before the `FLAG` to constitute the final plaintext. The whole result is then padded to ensure that it is exactly `16-byte` long.
+
+The ECB mode of operation encodes the blocks as follows:
+![](https://aes.cryptohack.org/static/img/aes/ECB_encryption.svg)
+
+Notice how each block is encrypted separately, and since we have the possibility to append an arbitrary string to the flag before it is encrypted, our goal could be something like:
+1. Find the length of the flag. This will be useful later, but in order to do so we can just append one character at a time until the ciphertext doubles in size (because of the padding). Once this happens, we know that $(n-1) + |flag| = 16$, where $n$ is the number of characters injected when $|ciphertext| = 32$,   and thus $|flag| = 16 - n + 1$.
+2. We can now start bruteforcing the flag one character at a time. In order to do this, we start with the first one
+	1. First step is to obtain a block of text that contains user input for $15$ bytes, so that the last one is left as being the first character of the flag. We can do this by asking our oracle to encode, for example, `\x10 * 15`. This way, our ciphertext will be in the form:
+	   $$
+	   | n \times 15 + flag[0] | + |flag[1:17] + | flag[17:31] | + ...
+	   $$
+	   where the $||$ represent the boundaries of a block, and $n \times 15$ is the string injected by the attacker. We'll refer to the first block as $b_0$, and we'll store it for now.
+	2. Since we know that $b_0$ is the encryption of a text of which we know the first $15$ bytes, we can actually obtain the $16th$ (that is also the first character of the flag), by simply bruteforcing all of the $255$ possible combinations of $c$, the candidate for $flag[0]$, by asking the server to encrypt `\x10 * 15 + c` for each possible candidate. In every case, we need to compare the first block of our output to $b_0$, and once we'll eventually find a match we know that $c = flag[0]$
+	3. Reiterate step 2 for $16$ times, but inject `\x10 * (15 - i)` in the first step ($i$ is the current step of the iteration), and `\x10 * (15 - i) + flag[:i] + c` in the second step. If you exhaust the space for one block (which means that the flag is longer than 16 bytes), than you can simply move to an extra block (and so you will add consider `15 * j - i`, where `j` is the current block number)
+The script can be found in `block_ciphers/ecb_oracle.py`.
+
+
+### CBC Encryption, ECB Decryption
+The CBC mode of operation adds an extra layer of confusion to the encryption scheme. Before being encrypted, each plaintext block is `XOR`'d with the preceding block's ciphertext, while the first block is `XOR`'d with a so-called `IV`, or *initialization vector*, for short, which is usually made of $16$ random bytes. The final ciphertext is  $IV + ciphertext$
+![](https://aes.cryptohack.org/static/img/aes/CBC_encryption.svg)
+The decryption process requires instead to pass each block through the decryption steps, and then `XOR` the result with the preceding block's ciphertext, to get the relative block's plaintext. The first block's post-decryption part needs to be decoded with the initialization vector
+![](https://www.researchgate.net/publication/362389340/figure/fig1/AS:11431281078760765@1660241201026/a-CBC-mode-encryption-b-CBC-mode-decryption.ppm)
+
+Imagine now that we have a program like the following (this is taken from [ecbcbcwtf](https://aes.cryptohack.org/ecbcbcwtf/)):
+```python
+from Crypto.Cipher import AES
+
+
+KEY = ?
+FLAG = ?
+
+
+@chal.route('/ecbcbcwtf/decrypt/<ciphertext>/')
+def decrypt(ciphertext):
+    ciphertext = bytes.fromhex(ciphertext)
+
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    try:
+        decrypted = cipher.decrypt(ciphertext)
+    except ValueError as e:
+        return {"error": str(e)}
+
+    return {"plaintext": decrypted.hex()}
+
+
+@chal.route('/ecbcbcwtf/encrypt_flag/')
+def encrypt_flag():
+    iv = os.urandom(16)
+
+    cipher = AES.new(KEY, AES.MODE_CBC, iv)
+    encrypted = cipher.encrypt(FLAG.encode())
+    ciphertext = iv.hex() + encrypted.hex()
+
+    return {"ciphertext": ciphertext}
+```
+We can get the flag encrypted via `CBC`, but we are only able to decrypt it via `ECB`.
+
+In order to understand how to decrypt the flag with a different mode of operation, let's try to represent the first `CBC` encrypted block. We could write it as:
+$$
+\text{block}_1 = enc_{cbc}(\text{plain}_1 \oplus IV)
+$$
+and since the `ECB` decryption acts on one single block, we would get:
+$$
+dec_{ecb}(\text{block}_1) = \text{plain}_1 \oplus IV
+$$
+But since we know $IV$, because $\text{ciphertext}_{cbc} = IV + \text{ciphertext}$, we can get the first plaintext block by performing:
+$$
+\text{plain}_1 = dec_{ecb}(\text{block}_1) \oplus IV
+$$
+More generally, the $n$th block of the CBC encrypted text can be written as:
+$$
+\text{block}_n = enc_{cbc}(\text{plain}_n \oplus \text{block}_{n-1}) \implies dec_{ecb}(\text{block}_n) = \text{plain}_n \oplus \text{block}_{n-1}
+$$
+Which means that retrieving the $n$th block of plaintext is as simple as:
+$$
+\text{plain}_n = dec_{ecb}(\text{block}_n) \oplus \text{block}_{n-1}
+$$
+

@@ -106,7 +106,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
+    "width": 299.0086555480957,
     "collapsed": true
   },
   "right": {
@@ -194,10 +194,12 @@
   },
   "active": "bc28c92fea062ac3",
   "lastOpenFiles": [
-    "mod_arithmetic/challenges.md",
-    "block_cypher/AES.md",
-    "block_cypher",
     "mod_arithmetic/crt.md",
+    "block_cypher/AES.md",
+    "Pasted image 20241029165720.png",
+    "Pasted image 20241029145507.png",
+    "mod_arithmetic/challenges.md",
+    "block_cypher",
     "mod_arithmetic/legendre-symbol.md",
     "mod_arithmetic",
     "Welcome.md"
